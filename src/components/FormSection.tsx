@@ -24,7 +24,7 @@ export default function FormSection({
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
 
   return (
-    <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
+    <div className="bg-gray-900 rounded-lg border border-gray-800">
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -57,9 +57,9 @@ export default function FormSection({
         </div>
       </button>
       
-      <div className={`transition-all duration-300 ease-in-out ${
-        isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
-      } overflow-hidden`}>
+      <div className={`transition-opacity duration-300 ease-in-out ${
+        isExpanded ? 'opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+      }`}>
         <div className="px-6 pb-6 space-y-4">
           {children}
         </div>
