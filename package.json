@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:patch": "npm version patch --no-git-tag-version && pnpm build && node scripts/write-version.cjs",
+    "build:minor": "npm version minor --no-git-tag-version && pnpm build && node scripts/write-version.cjs",
+    "build:major": "npm version major --no-git-tag-version && pnpm build && node scripts/write-version.cjs",
+    "build:noincrease": "pnpm build && node scripts/write-version.cjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.8",
