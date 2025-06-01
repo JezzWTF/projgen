@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react'
 import ProjectFormImproved from './components/ProjectFormImproved'
 import ProjectWizard from './components/ProjectWizard' // Import ProjectWizard
 import CodeOutput from './components/CodeOutput'
+import NextStepsDisplay from './components/NextStepsDisplay' // Import NextStepsDisplay
+import Tabs from './components/Tabs'; // Import the new Tabs component
 // import UIComparisonDemo from './components/UIComparisonDemo'
 import type { ProjectFormData } from './types/project'
 import { INITIAL_PROJECT_FORM_DATA, EXAMPLE_PROJECT_FORM_DATA } from './types/projectDefaults.js'; // Try with .js extension (common for TS/ESM)
+import Header from './components/Header'; // Import the new Header component
 
 type ViewMode = 'form' | 'wizard' // Define view modes
 
@@ -47,18 +50,17 @@ function App() {
     setIsIdManuallyEdited(edited);
   };
 
-  const handleFormSubmit = () => { // No data argument needed, it's already in App's state
+  const handleFormSubmit = () => {
     setGeneratedProjectData(formData);
     setIsCodeStale(false);
     setHasCodeBeenGenerated(true);
-    // Optionally, switch back to form view or a success view after submission
   };
 
   const handleReset = () => {
     setGeneratedProjectData(null);
     setFormData(INITIAL_PROJECT_FORM_DATA);
     setIsIdManuallyEdited(false);
-    setIsCodeStale(false); // Fresh state, so not stale
+    setIsCodeStale(false);
     setHasCodeBeenGenerated(false);
   };
 
@@ -72,29 +74,22 @@ function App() {
   const handleClearAll = () => {
     setFormData(INITIAL_PROJECT_FORM_DATA);
     setIsIdManuallyEdited(false);
-    setIsCodeStale(true); // Data changed, so it's stale relative to any previous generation
+    setIsCodeStale(true);
     setHasCodeBeenGenerated(false);
   };
-
 
   const switchToWizard = () => setViewMode('wizard');
   const switchToForm = () => setViewMode('form');
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 to-indigo-950 text-white">
+      <Header /> {/* Use the new Header component here */}
       <div className="container mx-auto px-4 py-8">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent mb-2">
-            ProjGen
-          </h1>
-          <p className="text-gray-400">
-            Generate code blocks for the portfolio projects page
-          </p>
-        </header>
+        {/* Remove the old header JSX */}
 
         {/* <UIComparisonDemo /> */}
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-8 lg:items-start">
           <div className="space-y-6">
             {viewMode === 'form' ? (
               <ProjectFormImproved
@@ -125,11 +120,25 @@ function App() {
             )}
           </div>
           
-          <div className="space-y-6">
+          <div className="space-y-6 bg-gray-900 rounded-lg p-0">
             {generatedProjectData ? (
-              <CodeOutput projectData={generatedProjectData} onReset={handleReset} />
+              <Tabs
+                tabs={[
+                  {
+                    key: 'code',
+                    label: 'Generated Code',
+                    content: <CodeOutput projectData={generatedProjectData} onReset={handleReset} />
+                  },
+                  {
+                    key: 'next-steps',
+                    label: 'Next Steps',
+                    content: <NextStepsDisplay projectData={generatedProjectData} />
+                  }
+                ]}
+                defaultTabKey="code"
+              />
             ) : (
-              <div className="bg-gray-900 rounded-lg p-6 text-center text-gray-500">
+              <div className="bg-gray-900 rounded-lg p-6 text-center text-gray-500 h-full flex flex-col justify-center items-center">
                 <p>Fill out the form or use the guided setup to generate code blocks</p>
               </div>
             )}
