@@ -7,9 +7,10 @@ import { STATUS_OPTIONS, GRADIENT_OPTIONS, CONTENT_TYPES } from '../types/projec
 
 interface Props {
   onSubmit: (data: ProjectFormData) => void
+  onSwitchToWizard?: () => void
 }
 
-export default function ProjectFormImproved({ onSubmit }: Props) {
+export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Props) {
   const [formData, setFormData] = useState<ProjectFormData>({
     id: '',
     title: '',
@@ -89,7 +90,7 @@ export default function ProjectFormImproved({ onSubmit }: Props) {
       url: "https://tool.jezz.wtf",
       github: "JezzWTF/example-project",
       isOpenSource: true,
-      icon: "🚀",
+      icon: "Rocket",
       tech: ["React", "TypeScript", "Tailwind CSS", "Vite"],
       features: [
         "Modern responsive design",
@@ -146,11 +147,6 @@ export default function ProjectFormImproved({ onSubmit }: Props) {
   }
 
   // Calculate completion indicators
-  const getRequiredFieldsCount = () => {
-    const required = [formData.title, formData.description, formData.lastUpdated].filter(Boolean)
-    return `${required.length}/3`
-  }
-
   const getProjectDetailsCount = () => {
     const details = [
       formData.longDescription,
@@ -199,6 +195,15 @@ export default function ProjectFormImproved({ onSubmit }: Props) {
               <Lightbulb className="w-4 h-4" />
               Load Example
             </button>
+            {onSwitchToWizard && (
+              <button
+                type="button"
+                onClick={onSwitchToWizard}
+                className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-colors text-sm"
+              >
+                Try Guided Setup
+              </button>
+            )}
           </div>
         </div>
 
@@ -402,14 +407,14 @@ export default function ProjectFormImproved({ onSubmit }: Props) {
                 <Palette className="w-4 h-4 inline mr-1" />
                 Icon
               </label>
-              <input
-                type="text"
-                value={formData.icon || ''}
-                onChange={(e) => handleInputChange('icon', e.target.value)}
-                placeholder="🚀 or Gamepad2"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <p className="text-xs text-gray-500 mt-1">Emoji or Lucide icon name</p>
+                              <input
+                  type="text"
+                  value={formData.icon || ''}
+                  onChange={(e) => handleInputChange('icon', e.target.value)}
+                  placeholder="🚀 or FileSpreadsheet"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 mt-1">Emoji or Lucide icon name (e.g., FileSpreadsheet, Database, Code2)</p>
             </div>
             
             <div>
@@ -572,4 +577,4 @@ export default function ProjectFormImproved({ onSubmit }: Props) {
       </div>
     </div>
   )
-} 
+}
