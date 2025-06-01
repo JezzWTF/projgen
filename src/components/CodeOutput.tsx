@@ -96,22 +96,27 @@ export default function CodeOutput({ projectData, onReset }: Props) {
       })
       lines.push(`  ],`)
     }
-    
-    if (projectData.content && projectData.content.length > 0) {
+      if (projectData.content && projectData.content.length > 0) {
       lines.push(`  content: [`)
       projectData.content.forEach((section, index) => {
         lines.push(`    {`)
         lines.push(`      title: "${section.title}",`)
         
-        if (Array.isArray(section.text)) {
+        // Convert string to array for list and paragraphs types during code generation
+        let textContent = section.text
+        if (typeof textContent === 'string' && (section.type === 'list' || section.type === 'paragraphs')) {
+          textContent = textContent.split('\n').filter(line => line.trim())
+        }
+        
+        if (Array.isArray(textContent)) {
           lines.push(`      text: [`)
-          section.text.forEach((text, textIndex) => {
-            const comma = textIndex < section.text.length - 1 ? ',' : ''
+          textContent.forEach((text, textIndex) => {
+            const comma = textIndex < textContent.length - 1 ? ',' : ''
             lines.push(`        "${text}"${comma}`)
           })
           lines.push(`      ],`)
         } else {
-          lines.push(`      text: "${section.text}",`)
+          lines.push(`      text: "${textContent}",`)
         }
         
         if (section.type && section.type !== 'paragraph') {

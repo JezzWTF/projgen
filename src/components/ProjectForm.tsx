@@ -116,8 +116,7 @@ export default function ProjectForm({ onSubmit }: Props) {
       screenshots: [
         "/img/screens/example-main.png",
         "/img/screens/example-dashboard.png"
-      ],
-      content: [
+      ],      content: [
         {
           title: "Development Approach",
           text: "This project follows modern development practices with a focus on maintainability and scalability.",
@@ -125,11 +124,7 @@ export default function ProjectForm({ onSubmit }: Props) {
         },
         {
           title: "Key Learnings",
-          text: [
-            "Advanced React patterns and hooks",
-            "TypeScript best practices",
-            "Modern CSS techniques"
-          ],
+          text: "Advanced React patterns and hooks\nTypeScript best practices\nModern CSS techniques",
           type: "list"
         }
       ],
@@ -515,15 +510,12 @@ export default function ProjectForm({ onSubmit }: Props) {
                   <option key={type.value} value={type.value}>{type.label}</option>
                 ))}
               </select>
-              
-              <textarea
+                <textarea
                 value={Array.isArray(section.text) ? section.text.join('\n') : section.text}
                 onChange={(e) => {
                   const value = e.target.value
-                  const processedValue = section.type === 'paragraphs' || section.type === 'list' 
-                    ? value.split('\n').filter(line => line.trim()) 
-                    : value
-                  updateContentSection(index, 'text', processedValue)
+                  // For list and paragraphs, store as string during editing, convert to array when generating code
+                  updateContentSection(index, 'text', value)
                 }}
                 placeholder={section.type === 'list' ? 'One item per line' : section.type === 'paragraphs' ? 'One paragraph per line' : 'Section content'}
                 rows={4}
