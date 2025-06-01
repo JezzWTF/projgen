@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Wand2, Lightbulb, RotateCcw, Link, Code, Image, Eye } from 'lucide-react'
 import WizardStep from './WizardStep'
 import WizardNavigation from './WizardNavigation'
@@ -7,43 +7,34 @@ import type { ProjectFormData, ContentSection } from '../types/project'
 import { STATUS_OPTIONS, GRADIENT_OPTIONS, CONTENT_TYPES } from '../types/project'
 
 interface Props {
-  onSubmit: (data: ProjectFormData) => void
-  onSwitchToForm: () => void
+  formData: ProjectFormData;
+  onFormDataChange: (data: Partial<ProjectFormData>) => void;
+  isIdManuallyEdited: boolean;
+  onSetIsIdManuallyEdited: (edited: boolean) => void;
+  isCodeStale: boolean;
+  hasCodeBeenGenerated: boolean;
+  onSubmit: () => void;
+  onSwitchToForm?: () => void;
+  onLoadExample: () => void;
+  onClearAll: () => void;
 }
 
-export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
+export default function ProjectWizard({
+  formData,
+  onFormDataChange,
+  isIdManuallyEdited,
+  onSetIsIdManuallyEdited,
+  isCodeStale,
+  hasCodeBeenGenerated,
+  onSubmit,
+  onSwitchToForm,
+  onLoadExample,
+  onClearAll,
+}: Props) {
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState<ProjectFormData>({
-    id: '',
-    title: '',
-    description: '',
-    status: 'Live',
-    lastUpdated: '',
-    color: 'from-blue-400 to-cyan-500',
-    featured: false,
-    tech: [],
-    features: [],
-    challenges: [],
-    screenshots: [],
-    content: [],
-    isOpenSource: true,
-    special: false // Add special to initial state
-  })
-
-  const [isIdManuallyEdited, setIsIdManuallyEdited] = useState(false)
-
-  // Auto-generate project ID from title
-  useEffect(() => {
-    if (formData.title && !isIdManuallyEdited) {
-      const generatedId = formData.title.toLowerCase()
-        .replace(/[^a-z0-9\s]/g, '')
-        .replace(/\s+/g, '-')
-      setFormData(prev => ({ ...prev, id: generatedId }))
-    }
-  }, [formData.title, isIdManuallyEdited])
 
   const handleInputChange = (field: keyof ProjectFormData, value: string | boolean | string[]) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    onFormDataChange({ [field]: value })
   }
 
   const addContentSection = () => {
@@ -52,111 +43,38 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
       text: '',
       type: 'paragraph'
     }
-    setFormData(prev => ({
-      ...prev,
-      content: [...(prev.content || []), newSection]
-    }))
+    onFormDataChange({ content: [...(formData.content || []), newSection] })
   }
 
   const updateContentSection = (index: number, field: keyof ContentSection, value: string | string[]) => {
-    setFormData(prev => ({
-      ...prev,
-      content: prev.content?.map((section, i) => 
-        i === index ? { ...section, [field]: value } : section
-      ) || []
-    }))
+    const updatedContent = formData.content?.map((section, i) => 
+      i === index ? { ...section, [field]: value } : section
+    ) || []
+    onFormDataChange({ content: updatedContent })
   }
 
   const removeContentSection = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      content: prev.content?.filter((_, i) => i !== index) || []
-    }))
+    const updatedContent = formData.content?.filter((_, i) => i !== index) || []
+    onFormDataChange({ content: updatedContent })
   }
 
-  const loadExampleData = () => {
-    setFormData({
-      id: "example-project",
-      title: "Example Project",
-      description: "A comprehensive web application showcasing modern development practices",
-      longDescription: "This project demonstrates full-stack development capabilities with React, TypeScript, and modern deployment practices.",
-      status: "Live",
-      lastUpdated: "01-06-2025",
-      color: "from-blue-400 to-cyan-500",
-      featured: true,
-      url: "https://tool.jezz.wtf",
-      github: "JezzWTF/example-project",
-      isOpenSource: true,
-      icon: "Rocket",
-      tech: ["React", "TypeScript", "Tailwind CSS", "Vite"],
-      features: [
-        "Modern responsive design",
-        "Real-time data updates",
-        "User authentication"
-      ],
-      challenges: [
-        "Implementing complex state management",
-        "Optimizing for mobile performance"
-      ],
-      screenshots: [
-        "/img/screens/example-main.png",
-        "/img/screens/example-dashboard.png"
-      ],
-      content: [
-        {
-          title: "Development Approach",
-          text: "This project follows modern development practices with a focus on maintainability and scalability.",
-          type: "paragraph"
-        }
-      ],
-      galleryFolder: "example-gallery",
-      hideVisualSection: false,
-      hideProjectInfo: false,
-      hideTechStack: false,
-      special: false // Add special to example data
-    })
-    setIsIdManuallyEdited(true)
-  }
-
-  const clearAllData = () => {
-    setFormData({
-      id: '',
-      title: '',
-      description: '',
-      status: 'Live',
-      lastUpdated: '',
-      color: 'from-blue-400 to-cyan-500',
-      featured: false,
-      tech: [],
-      features: [],
-      challenges: [],
-      screenshots: [],
-      content: [],
-      isOpenSource: true,
-      special: false // Add special to cleared data
-    })
-    setIsIdManuallyEdited(false)
-    setCurrentStep(1)
-  }
-
-  // Validation for each step
   const validateStep = (step: number): boolean => {
     switch (step) {
-      case 1: // Project Basics
+      case 1:
         return !!(formData.title && formData.description && formData.lastUpdated)
-      case 2: // Project Identity
-        return true // All optional
-      case 3: // Links & Repository
-        return true // All optional
-      case 4: // Technical Details
-        return true // All optional
-      case 5: // Visual Assets
-        return true // All optional
-      case 6: // Content Sections
-        return true // All optional
-      case 7: // Advanced Settings
-        return true // All optional
-      case 8: // Review
+      case 2:
+        return true
+      case 3:
+        return true
+      case 4:
+        return true
+      case 5:
+        return true
+      case 6:
+        return true
+      case 7:
+        return true
+      case 8:
         return true
       default:
         return false
@@ -179,7 +97,7 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
   }
 
   const handleSubmit = () => {
-    onSubmit(formData)
+    onSubmit()
   }
 
   const renderStep = () => {
@@ -268,13 +186,28 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
                   value={formData.id}
                   onChange={(e) => {
                     handleInputChange('id', e.target.value)
-                    setIsIdManuallyEdited(true)
+                    onSetIsIdManuallyEdited(true)
                   }}
                   placeholder="Auto-generated from title"
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Used for internal identification and URL generation
+                  {isIdManuallyEdited ? (
+                    <>
+                      Manually set. 
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onSetIsIdManuallyEdited(false)
+                        }}
+                        className="text-blue-400 hover:text-blue-300 underline ml-1"
+                      >
+                        Reset to auto-generate
+                      </button>
+                    </>
+                  ) : (
+                    'Auto-generated from title'
+                  )}
                 </p>
               </div>
 
@@ -324,8 +257,10 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
                   className="w-4 h-4 text-yellow-600 bg-gray-800 border-gray-700 rounded focus:ring-yellow-500"
                 />
                 <label className="ml-2 text-sm">Special Project</label>
-                <p className="text-xs text-gray-500 ml-2">(marks project with a special tag)</p>
               </div>
+              <p className="text-xs text-gray-400 ml-6">
+                Marks the project with a distinct visual treatment (e.g., special badge, shine effect) on the portfolio.
+              </p>
             </div>
           </WizardStep>
         )
@@ -407,7 +342,7 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
             description="Add information about technologies, features, and challenges"
           >
             <div className="space-y-6">
-                             <ArrayInput
+               <ArrayInput
                  label="Tech Stack"
                  value={formData.tech || []}
                  onChange={(items: string[]) => handleInputChange('tech', items)}
@@ -440,7 +375,7 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
             description="Add screenshots and configure visual elements"
           >
             <div className="space-y-6">
-                             <ArrayInput
+               <ArrayInput
                  label="Screenshots"
                  value={formData.screenshots || []}
                  onChange={(items: string[]) => handleInputChange('screenshots', items)}
@@ -493,7 +428,13 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
               {formData.content?.map((section, index) => (
                 <div key={index} className="bg-gray-800 p-4 rounded-lg border border-gray-700">
                   <div className="flex items-center justify-between mb-3">
-                    <h5 className="font-medium">Section {index + 1}</h5>
+                    <input 
+                        type="text" 
+                        value={section.title} 
+                        onChange={(e) => updateContentSection(index, 'title', e.target.value)} 
+                        placeholder="Section Title" 
+                        className="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent mr-2"
+                    />
                     <button
                       type="button"
                       onClick={() => removeContentSection(index)}
@@ -505,19 +446,8 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
 
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium mb-1">Title</label>
-                      <input
-                        type="text"
-                        value={section.title}
-                        onChange={(e) => updateContentSection(index, 'title', e.target.value)}
-                        placeholder="Section title"
-                        className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
                       <label className="block text-sm font-medium mb-1">Type</label>
-                                             <select
+                       <select
                          value={section.type}
                          onChange={(e) => updateContentSection(index, 'type', e.target.value)}
                          className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -533,7 +463,7 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
                       <textarea
                         value={Array.isArray(section.text) ? section.text.join('\n') : section.text}
                         onChange={(e) => updateContentSection(index, 'text', e.target.value)}
-                        placeholder={section.type === 'list' ? 'One item per line' : 'Section content'}
+                        placeholder={section.type === 'list' ? 'One item per line' : section.type === 'paragraphs' ? 'One paragraph per line' : 'Section content'}
                         rows={4}
                         className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
@@ -640,14 +570,19 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
                 </div>
               </div>
 
-              <div className="bg-blue-900/20 border border-blue-700 p-4 rounded-lg">
+              <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                   <Eye className="w-4 h-4 text-blue-400" />
                   <span className="font-medium text-blue-400">Ready to Generate</span>
                 </div>
                 <p className="text-sm text-gray-300">
-                  Your project configuration is complete. Click "Generate Code" to create the code blocks for your portfolio.
+                  Your project configuration is complete. Click "{hasCodeBeenGenerated && isCodeStale ? 'Re-generate Code' : 'Generate Code'}" to create the code blocks for your portfolio.
                 </p>
+                {hasCodeBeenGenerated && isCodeStale && (
+                  <p className="text-center text-yellow-400 text-xs mt-2">
+                    Form data has changed. Re-generate to see updated code blocks.
+                  </p>
+                )}
               </div>
             </div>
           </WizardStep>
@@ -660,7 +595,6 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Header with Mode Switch */}
       <div className="bg-gray-900 rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -670,7 +604,7 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={clearAllData}
+              onClick={onClearAll}
               className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
             >
               <RotateCcw className="w-4 h-4" />
@@ -678,7 +612,7 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
             </button>
             <button
               type="button"
-              onClick={loadExampleData}
+              onClick={onLoadExample}
               className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
             >
               <Lightbulb className="w-4 h-4" />
@@ -699,7 +633,6 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
         </div>
       </div>
 
-      {/* Wizard Content */}
       <div className="bg-gray-900 rounded-lg p-6">
         {renderStep()}
         
@@ -712,6 +645,8 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
           canProceed={canProceed}
           isLastStep={currentStep === totalSteps}
           isFirstStep={currentStep === 1}
+          isCodeStale={isCodeStale}
+          hasCodeBeenGenerated={hasCodeBeenGenerated}
         />
       </div>
     </div>

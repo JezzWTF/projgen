@@ -9,6 +9,8 @@ interface WizardNavigationProps {
   canProceed: boolean
   isLastStep: boolean
   isFirstStep: boolean
+  isCodeStale: boolean
+  hasCodeBeenGenerated: boolean
 }
 
 export default function WizardNavigation({
@@ -19,8 +21,12 @@ export default function WizardNavigation({
   onSubmit,
   canProceed,
   isLastStep,
-  isFirstStep
+  isFirstStep,
+  isCodeStale,
+  hasCodeBeenGenerated
 }: WizardNavigationProps) {
+  const progressPercentage = (currentStep / totalSteps) * 100
+
   return (
     <div className="flex items-center justify-between pt-6 border-t border-gray-700">
       {/* Previous Button */}
@@ -73,7 +79,7 @@ export default function WizardNavigation({
           }`}
         >
           <Check className="w-4 h-4" />
-          Generate Code
+          {hasCodeBeenGenerated && isCodeStale ? 'Re-generate Code' : 'Generate Code'}
         </button>
       ) : (
         <button

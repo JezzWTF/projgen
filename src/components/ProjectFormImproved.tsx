@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { FileCode2, Lightbulb, RotateCcw, User, Layers, Settings, Code, Link, Palette } from 'lucide-react'
 import FormSection from './FormSection'
 import ArrayInput from './ArrayInput'
@@ -6,45 +5,33 @@ import type { ProjectFormData, ContentSection } from '../types/project'
 import { STATUS_OPTIONS, GRADIENT_OPTIONS, CONTENT_TYPES } from '../types/project'
 
 interface Props {
-  onSubmit: (data: ProjectFormData) => void
-  onSwitchToWizard?: () => void
+  formData: ProjectFormData;
+  onFormDataChange: (data: Partial<ProjectFormData>) => void;
+  isIdManuallyEdited: boolean;
+  onSetIsIdManuallyEdited: (edited: boolean) => void;
+  isCodeStale: boolean;
+  hasCodeBeenGenerated: boolean;
+  onSubmit: () => void;
+  onSwitchToWizard?: () => void;
+  onLoadExample: () => void;
+  onClearAll: () => void;
 }
 
-export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Props) {
-  const [formData, setFormData] = useState<ProjectFormData>({
-    id: '',
-    title: '',
-    description: '',
-    status: 'Live',
-    lastUpdated: '',
-    color: 'from-blue-400 to-cyan-500',
-    featured: false,
-    tech: [],
-    features: [],
-    challenges: [],
-    screenshots: [],
-    content: [],
-    isOpenSource: true,
-    special: false // Add special to initial state
-  })
-
-  // Track whether the ID was manually edited by the user
-  const [isIdManuallyEdited, setIsIdManuallyEdited] = useState(false)
-
-  // Auto-generate project ID from title
-  useEffect(() => {
-    if (!isIdManuallyEdited) {
-      const generatedId = formData.title
-        ? formData.title.toLowerCase()
-            .replace(/[^a-z0-9\s]/g, '')
-            .replace(/\s+/g, '-')
-        : ''
-      setFormData(prev => ({ ...prev, id: generatedId }))
-    }
-  }, [formData.title, isIdManuallyEdited])
+export default function ProjectFormImproved({
+  formData,
+  onFormDataChange,
+  isIdManuallyEdited,
+  onSetIsIdManuallyEdited,
+  isCodeStale,
+  hasCodeBeenGenerated,
+  onSubmit,
+  onSwitchToWizard,
+  onLoadExample,
+  onClearAll,
+}: Props) {
 
   const handleInputChange = (field: keyof ProjectFormData, value: string | boolean | string[]) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    onFormDataChange({ [field]: value })
   }
 
   const addContentSection = () => {
@@ -53,105 +40,28 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
       text: '',
       type: 'paragraph'
     }
-    setFormData(prev => ({
-      ...prev,
-      content: [...(prev.content || []), newSection]
-    }))
+    onFormDataChange({
+      content: [...(formData.content || []), newSection]
+    })
   }
 
   const updateContentSection = (index: number, field: keyof ContentSection, value: string | string[]) => {
-    setFormData(prev => ({
-      ...prev,
-      content: prev.content?.map((section, i) => 
-        i === index ? { ...section, [field]: value } : section
-      ) || []
-    }))
+    const updatedContent = formData.content?.map((section, i) => 
+      i === index ? { ...section, [field]: value } : section
+    ) || []
+    onFormDataChange({ content: updatedContent })
   }
 
   const removeContentSection = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      content: prev.content?.filter((_, i) => i !== index) || []
-    }))
+    const updatedContent = formData.content?.filter((_, i) => i !== index) || []
+    onFormDataChange({ content: updatedContent })
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(formData)
+    onSubmit()
   }
 
-  const loadExampleData = () => {
-    setFormData({
-      id: "example-project",
-      title: "Example Project",
-      description: "A comprehensive web application showcasing modern development practices",
-      longDescription: "This project demonstrates full-stack development capabilities with React, TypeScript, and modern deployment practices. It serves as a portfolio piece highlighting technical skills and problem-solving abilities.",
-      status: "Live",
-      lastUpdated: "01-06-2025",
-      color: "from-blue-400 to-cyan-500",
-      featured: true,
-      url: "https://tool.jezz.wtf",
-      github: "JezzWTF/example-project",
-      isOpenSource: true,
-      icon: "Rocket",
-      tech: ["React", "TypeScript", "Tailwind CSS", "Vite"],
-      features: [
-        "Modern responsive design",
-        "Real-time data updates",
-        "User authentication",
-        "Performance optimized"
-      ],
-      challenges: [
-        "Implementing complex state management",
-        "Optimizing for mobile performance",
-        "Creating reusable component architecture"
-      ],
-      screenshots: [
-        "/img/screens/example-main.png",
-        "/img/screens/example-dashboard.png"
-      ],
-      content: [
-        {
-          title: "Development Approach",
-          text: "This project follows modern development practices with a focus on maintainability and scalability.",
-          type: "paragraph"
-        },
-        {
-          title: "Key Learnings",
-          text: "Advanced React patterns and hooks\nTypeScript best practices\nModern CSS techniques",
-          type: "list"
-        }
-      ],
-      galleryFolder: "example-gallery",
-      hideVisualSection: false,
-      hideProjectInfo: false,
-      hideTechStack: false,
-      special: false // Add special to example data
-    })
-    setIsIdManuallyEdited(true) // Example data has a pre-set ID
-  }
-
-  const clearAllData = () => {
-    setFormData({
-      id: '',
-      title: '',
-      description: '',
-      status: 'Live',
-      lastUpdated: '',
-      color: 'from-blue-400 to-cyan-500',
-      featured: false,
-      tech: [],
-      features: [],
-      challenges: [],
-      screenshots: [],
-      content: [],
-      isOpenSource: true,
-      special: false // Add special to cleared data
-    })
-    setIsIdManuallyEdited(false) // Reset to auto-generation mode
-  }
-
-  // Calculate completion indicators
   const getProjectDetailsCount = () => {
     const details = [
       formData.id,
@@ -187,7 +97,7 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={clearAllData}
+              onClick={onClearAll}
               className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
             >
               <RotateCcw className="w-4 h-4" />
@@ -195,7 +105,7 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
             </button>
             <button
               type="button"
-              onClick={loadExampleData}
+              onClick={onLoadExample}
               className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
             >
               <Lightbulb className="w-4 h-4" />
@@ -308,6 +218,9 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
             />
             <label className="ml-2 text-sm">Special Project</label>
           </div>
+          <p className="text-xs text-gray-400 ml-6">
+            Marks the project with a distinct visual treatment (e.g., special badge, shine effect) on the portfolio.
+          </p>
         </form>
       </div>
 
@@ -329,7 +242,7 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
               value={formData.id}
               onChange={(e) => {
                 handleInputChange('id', e.target.value)
-                setIsIdManuallyEdited(true)
+                onSetIsIdManuallyEdited(true)
               }}
               placeholder="Auto-generated from title"
               className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -341,14 +254,7 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
                   <button
                     type="button"
                     onClick={() => {
-                      setIsIdManuallyEdited(false)
-                      // Trigger auto-generation immediately
-                      if (formData.title) {
-                        const generatedId = formData.title.toLowerCase()
-                          .replace(/[^a-z0-9\s]/g, '')
-                          .replace(/\s+/g, '-')
-                        handleInputChange('id', generatedId)
-                      }
+                      onSetIsIdManuallyEdited(false)
                     }}
                     className="text-blue-400 hover:text-blue-300 underline ml-1"
                   >
@@ -588,8 +494,13 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
           onClick={handleSubmit}
           className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 py-3 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
         >
-          Generate Code Blocks
+          {hasCodeBeenGenerated && isCodeStale ? 'Re-generate Code Blocks' : 'Generate Code Blocks'}
         </button>
+        {hasCodeBeenGenerated && isCodeStale && (
+          <p className="text-center text-yellow-400 text-xs mt-2">
+            Form data has changed. Re-generate to see updated code blocks.
+          </p>
+        )}
       </div>
     </div>
   )
