@@ -16,7 +16,7 @@ export default function CodeOutput({ projectData, onReset }: Props) {
       if (!icon) return '""'
       
       // If it's an emoji (contains non-ASCII characters) or starts with lowercase, quote it
-      if (/[^\x00-\x7F]/.test(icon) || /^[a-z]/.test(icon)) {
+      if (/[^\u0020-\u007F]/.test(icon) || /^[a-z]/.test(icon)) {
         return `"${icon}"`
       }
       
@@ -87,7 +87,7 @@ export default function CodeOutput({ projectData, onReset }: Props) {
         if (!icon) return '""'
         
         // If it's an emoji (contains non-ASCII characters) or starts with lowercase, quote it
-        if (/[^\x00-\x7F]/.test(icon) || /^[a-z]/.test(icon)) {
+        if (/[^\u0020-\u007F]/.test(icon) || /^[a-z]/.test(icon)) {
           return `"${icon}"`
         }
         
