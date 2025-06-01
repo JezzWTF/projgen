@@ -25,8 +25,6 @@ export default function WizardNavigation({
   isCodeStale,
   hasCodeBeenGenerated
 }: WizardNavigationProps) {
-  const progressPercentage = (currentStep / totalSteps) * 100
-
   return (
     <div className="flex items-center justify-between pt-6 border-t border-gray-700">
       {/* Previous Button */}

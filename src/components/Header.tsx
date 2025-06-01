@@ -1,8 +1,10 @@
 import React from 'react';
 
-interface HeaderProps {
-  // Define any props if needed in the future
-}
+// type HeaderProps = Record<string, never>;
+// Or, if no props are truly expected and `children` is the only implicit prop from React.FC:
+// const Header: React.FC = () => { ... }
+// For now, to be explicit and allow future props easily while satisfying the linter:
+type HeaderProps = object;
 
 const Header: React.FC<HeaderProps> = () => {
   return (
