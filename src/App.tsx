@@ -8,6 +8,7 @@ import Tabs from './components/Tabs'; // Import the new Tabs component
 import type { ProjectFormData } from './types/project'
 import { INITIAL_PROJECT_FORM_DATA, EXAMPLE_PROJECT_FORM_DATA } from './types/projectDefaults.js'; // Try with .js extension (common for TS/ESM)
 import Header from './components/Header'; // Import the new Header component
+import Footer from './components/Footer'; // Import the new Footer component
 
 type ViewMode = 'form' | 'wizard' // Define view modes
 
@@ -82,69 +83,72 @@ function App() {
   const switchToForm = () => setViewMode('form');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 to-indigo-950 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 to-indigo-950 text-white flex flex-col">
       <Header /> {/* Use the new Header component here */}
-      <div className="container mx-auto px-4 py-8">
-        {/* Remove the old header JSX */}
+      <main className="flex-grow container mx-auto px-4 py-8">
+        {/* <div className="container mx-auto px-4 py-8"> Commented out or removed original container div if main takes over its styling */}
+          {/* Remove the old header JSX */}
 
-        {/* <UIComparisonDemo /> */}
+          {/* <UIComparisonDemo /> */}
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:items-start">
-          <div className="space-y-6">
-            {viewMode === 'form' ? (
-              <ProjectFormImproved
-                formData={formData}
-                onFormDataChange={handleFormDataChange}
-                isIdManuallyEdited={isIdManuallyEdited}
-                onSetIsIdManuallyEdited={handleSetIsIdManuallyEdited}
-                isCodeStale={isCodeStale}
-                hasCodeBeenGenerated={hasCodeBeenGenerated}
-                onSubmit={handleFormSubmit}
-                onSwitchToWizard={switchToWizard}
-                onLoadExample={handleLoadExample}
-                onClearAll={handleClearAll}
-              />
-            ) : (
-              <ProjectWizard
-                formData={formData}
-                onFormDataChange={handleFormDataChange}
-                isIdManuallyEdited={isIdManuallyEdited}
-                onSetIsIdManuallyEdited={handleSetIsIdManuallyEdited}
-                isCodeStale={isCodeStale}
-                hasCodeBeenGenerated={hasCodeBeenGenerated}
-                onSubmit={handleFormSubmit}
-                onSwitchToForm={switchToForm}
-                onLoadExample={handleLoadExample}
-                onClearAll={handleClearAll}
-              />
-            )}
+          <div className="grid lg:grid-cols-2 gap-8 lg:items-start">
+            <div className="space-y-6">
+              {viewMode === 'form' ? (
+                <ProjectFormImproved
+                  formData={formData}
+                  onFormDataChange={handleFormDataChange}
+                  isIdManuallyEdited={isIdManuallyEdited}
+                  onSetIsIdManuallyEdited={handleSetIsIdManuallyEdited}
+                  isCodeStale={isCodeStale}
+                  hasCodeBeenGenerated={hasCodeBeenGenerated}
+                  onSubmit={handleFormSubmit}
+                  onSwitchToWizard={switchToWizard}
+                  onLoadExample={handleLoadExample}
+                  onClearAll={handleClearAll}
+                />
+              ) : (
+                <ProjectWizard
+                  formData={formData}
+                  onFormDataChange={handleFormDataChange}
+                  isIdManuallyEdited={isIdManuallyEdited}
+                  onSetIsIdManuallyEdited={handleSetIsIdManuallyEdited}
+                  isCodeStale={isCodeStale}
+                  hasCodeBeenGenerated={hasCodeBeenGenerated}
+                  onSubmit={handleFormSubmit}
+                  onSwitchToForm={switchToForm}
+                  onLoadExample={handleLoadExample}
+                  onClearAll={handleClearAll}
+                />
+              )}
+            </div>
+            
+            <div className="space-y-6 bg-gray-900 rounded-lg p-0">
+              {generatedProjectData ? (
+                <Tabs
+                  tabs={[
+                    {
+                      key: 'code',
+                      label: 'Generated Code',
+                      content: <CodeOutput projectData={generatedProjectData} onReset={handleReset} />
+                    },
+                    {
+                      key: 'next-steps',
+                      label: 'Next Steps',
+                      content: <NextStepsDisplay projectData={generatedProjectData} />
+                    }
+                  ]}
+                  defaultTabKey="code"
+                />
+              ) : (
+                <div className="bg-gray-900 rounded-lg p-6 text-center text-gray-500 h-full flex flex-col justify-center items-center">
+                  <p>Fill out the form or use the guided setup to generate code blocks</p>
+                </div>
+              )}
+            </div>
           </div>
-          
-          <div className="space-y-6 bg-gray-900 rounded-lg p-0">
-            {generatedProjectData ? (
-              <Tabs
-                tabs={[
-                  {
-                    key: 'code',
-                    label: 'Generated Code',
-                    content: <CodeOutput projectData={generatedProjectData} onReset={handleReset} />
-                  },
-                  {
-                    key: 'next-steps',
-                    label: 'Next Steps',
-                    content: <NextStepsDisplay projectData={generatedProjectData} />
-                  }
-                ]}
-                defaultTabKey="code"
-              />
-            ) : (
-              <div className="bg-gray-900 rounded-lg p-6 text-center text-gray-500 h-full flex flex-col justify-center items-center">
-                <p>Fill out the form or use the guided setup to generate code blocks</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+        {/* </div> Commented out or removed original container div */}
+      </main>
+      <Footer /> {/* Add the Footer component here, OUTSIDE main */}
     </div>
   )
 }
