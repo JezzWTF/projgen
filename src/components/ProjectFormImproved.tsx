@@ -33,10 +33,12 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
 
   // Auto-generate project ID from title
   useEffect(() => {
-    if (formData.title && !isIdManuallyEdited) {
-      const generatedId = formData.title.toLowerCase()
-        .replace(/[^a-z0-9\s]/g, '')
-        .replace(/\s+/g, '-')
+    if (!isIdManuallyEdited) {
+      const generatedId = formData.title
+        ? formData.title.toLowerCase()
+            .replace(/[^a-z0-9\s]/g, '')
+            .replace(/\s+/g, '-')
+        : ''
       setFormData(prev => ({ ...prev, id: generatedId }))
     }
   }, [formData.title, isIdManuallyEdited])
@@ -152,6 +154,7 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
   // Calculate completion indicators
   const getProjectDetailsCount = () => {
     const details = [
+      formData.id,
       formData.longDescription,
       formData.url,
       formData.github,
