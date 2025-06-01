@@ -1,0 +1,575 @@
+import { useState, useEffect } from 'react'
+import { FileCode2, Lightbulb, RotateCcw, User, Layers, Settings, Code, Link, Palette } from 'lucide-react'
+import FormSection from './FormSection'
+import ArrayInput from './ArrayInput'
+import type { ProjectFormData, ContentSection } from '../types/project'
+import { STATUS_OPTIONS, GRADIENT_OPTIONS, CONTENT_TYPES } from '../types/project'
+
+interface Props {
+  onSubmit: (data: ProjectFormData) => void
+}
+
+export default function ProjectFormImproved({ onSubmit }: Props) {
+  const [formData, setFormData] = useState<ProjectFormData>({
+    id: '',
+    title: '',
+    description: '',
+    status: 'Live',
+    lastUpdated: '',
+    color: 'from-blue-400 to-cyan-500',
+    featured: false,
+    tech: [],
+    features: [],
+    challenges: [],
+    screenshots: [],
+    content: [],
+    isOpenSource: true
+  })
+
+  // Track whether the ID was manually edited by the user
+  const [isIdManuallyEdited, setIsIdManuallyEdited] = useState(false)
+
+  // Auto-generate project ID from title
+  useEffect(() => {
+    if (formData.title && !isIdManuallyEdited) {
+      const generatedId = formData.title.toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/\s+/g, '-')
+      setFormData(prev => ({ ...prev, id: generatedId }))
+    }
+  }, [formData.title, isIdManuallyEdited])
+
+  const handleInputChange = (field: keyof ProjectFormData, value: string | boolean | string[]) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const addContentSection = () => {
+    const newSection: ContentSection = {
+      title: '',
+      text: '',
+      type: 'paragraph'
+    }
+    setFormData(prev => ({
+      ...prev,
+      content: [...(prev.content || []), newSection]
+    }))
+  }
+
+  const updateContentSection = (index: number, field: keyof ContentSection, value: string | string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      content: prev.content?.map((section, i) => 
+        i === index ? { ...section, [field]: value } : section
+      ) || []
+    }))
+  }
+
+  const removeContentSection = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      content: prev.content?.filter((_, i) => i !== index) || []
+    }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSubmit(formData)
+  }
+
+  const loadExampleData = () => {
+    setFormData({
+      id: "example-project",
+      title: "Example Project",
+      description: "A comprehensive web application showcasing modern development practices",
+      longDescription: "This project demonstrates full-stack development capabilities with React, TypeScript, and modern deployment practices. It serves as a portfolio piece highlighting technical skills and problem-solving abilities.",
+      status: "Live",
+      lastUpdated: "01-06-2025",
+      color: "from-blue-400 to-cyan-500",
+      featured: true,
+      url: "https://tool.jezz.wtf",
+      github: "JezzWTF/example-project",
+      isOpenSource: true,
+      icon: "🚀",
+      tech: ["React", "TypeScript", "Tailwind CSS", "Vite"],
+      features: [
+        "Modern responsive design",
+        "Real-time data updates",
+        "User authentication",
+        "Performance optimized"
+      ],
+      challenges: [
+        "Implementing complex state management",
+        "Optimizing for mobile performance",
+        "Creating reusable component architecture"
+      ],
+      screenshots: [
+        "/img/screens/example-main.png",
+        "/img/screens/example-dashboard.png"
+      ],
+      content: [
+        {
+          title: "Development Approach",
+          text: "This project follows modern development practices with a focus on maintainability and scalability.",
+          type: "paragraph"
+        },
+        {
+          title: "Key Learnings",
+          text: "Advanced React patterns and hooks\nTypeScript best practices\nModern CSS techniques",
+          type: "list"
+        }
+      ],
+      galleryFolder: "example-gallery",
+      hideVisualSection: false,
+      hideProjectInfo: false,
+      hideTechStack: false
+    })
+    setIsIdManuallyEdited(true) // Example data has a pre-set ID
+  }
+
+  const clearAllData = () => {
+    setFormData({
+      id: '',
+      title: '',
+      description: '',
+      status: 'Live',
+      lastUpdated: '',
+      color: 'from-blue-400 to-cyan-500',
+      featured: false,
+      tech: [],
+      features: [],
+      challenges: [],
+      screenshots: [],
+      content: [],
+      isOpenSource: true
+    })
+    setIsIdManuallyEdited(false) // Reset to auto-generation mode
+  }
+
+  // Calculate completion indicators
+  const getRequiredFieldsCount = () => {
+    const required = [formData.title, formData.description, formData.lastUpdated].filter(Boolean)
+    return `${required.length}/3`
+  }
+
+  const getProjectDetailsCount = () => {
+    const details = [
+      formData.longDescription,
+      formData.url,
+      formData.github,
+      formData.icon,
+      formData.galleryFolder
+    ].filter(Boolean)
+    return details.length > 0 ? details.length : undefined
+  }
+
+  const getContentCount = () => {
+    const content = [
+      ...(formData.tech || []),
+      ...(formData.features || []),
+      ...(formData.challenges || []),
+      ...(formData.screenshots || []),
+      ...(formData.content || [])
+    ]
+    return content.length > 0 ? content.length : undefined
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header with Quick Actions */}
+      <div className="bg-gray-900 rounded-lg p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <FileCode2 className="w-6 h-6 text-blue-400" />
+            <h2 className="text-2xl font-bold">Project Generator</h2>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={clearAllData}
+              className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Clear All
+            </button>
+            <button
+              type="button"
+              onClick={loadExampleData}
+              className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
+            >
+              <Lightbulb className="w-4 h-4" />
+              Load Example
+            </button>
+          </div>
+        </div>
+
+        {/* Essential Fields - Always Visible */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Project Title <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                required
+                placeholder="My Awesome Project"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Status <span className="text-red-400">*</span>
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => handleInputChange('status', e.target.value)}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                {STATUS_OPTIONS.map(status => (
+                  <option key={status} value={status}>{status}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Short Description <span className="text-red-400">*</span>
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              required
+              rows={3}
+              placeholder="A brief description of what this project does..."
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Last Updated <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.lastUpdated}
+                onChange={(e) => handleInputChange('lastUpdated', e.target.value)}
+                placeholder="DD-MM-YYYY or descriptive text"
+                required
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">Color Theme</label>
+              <select
+                value={formData.color}
+                onChange={(e) => handleInputChange('color', e.target.value)}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                {GRADIENT_OPTIONS.map(gradient => (
+                  <option key={gradient} value={gradient}>{gradient}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              checked={formData.featured}
+              onChange={(e) => handleInputChange('featured', e.target.checked)}
+              className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-700 rounded focus:ring-blue-500"
+            />
+            <label className="ml-2 text-sm">Featured Project</label>
+          </div>
+        </form>
+      </div>
+
+      {/* Collapsible Sections */}
+      <div className="space-y-4">
+        {/* Project Details */}
+        <FormSection
+          title="Project Details"
+          icon={<User className="w-5 h-5" />}
+          defaultExpanded={true}
+          badge={getProjectDetailsCount()}
+          colorClass="text-green-400"
+          description="Additional information and links"
+        >
+          <div>
+            <label className="block text-sm font-medium mb-2">Project ID</label>
+            <input
+              type="text"
+              value={formData.id}
+              onChange={(e) => {
+                handleInputChange('id', e.target.value)
+                setIsIdManuallyEdited(true)
+              }}
+              placeholder="Auto-generated from title"
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              {isIdManuallyEdited ? (
+                <>
+                  Manually set. 
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsIdManuallyEdited(false)
+                      // Trigger auto-generation immediately
+                      if (formData.title) {
+                        const generatedId = formData.title.toLowerCase()
+                          .replace(/[^a-z0-9\s]/g, '')
+                          .replace(/\s+/g, '-')
+                        handleInputChange('id', generatedId)
+                      }
+                    }}
+                    className="text-blue-400 hover:text-blue-300 underline ml-1"
+                  >
+                    Reset to auto-generate
+                  </button>
+                </>
+              ) : (
+                'Auto-generated from title'
+              )}
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Detailed Description</label>
+            <textarea
+              value={formData.longDescription || ''}
+              onChange={(e) => handleInputChange('longDescription', e.target.value)}
+              rows={4}
+              placeholder="A more comprehensive description for the project overview..."
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                <Link className="w-4 h-4 inline mr-1" />
+                Live URL
+              </label>
+              <input
+                type="url"
+                value={formData.url || ''}
+                onChange={(e) => handleInputChange('url', e.target.value)}
+                placeholder="https://your-project.com"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                <Code className="w-4 h-4 inline mr-1" />
+                GitHub Repository
+              </label>
+              <input
+                type="text"
+                value={formData.github || ''}
+                onChange={(e) => handleInputChange('github', e.target.value)}
+                placeholder="username/repository"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          {/* Contextual GitHub Options */}
+          {formData.github && (
+            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.isOpenSource}
+                  onChange={(e) => handleInputChange('isOpenSource', e.target.checked)}
+                  className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-700 rounded focus:ring-blue-500"
+                />
+                <label className="ml-2 text-sm">Open Source Repository</label>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                <Palette className="w-4 h-4 inline mr-1" />
+                Icon
+              </label>
+              <input
+                type="text"
+                value={formData.icon || ''}
+                onChange={(e) => handleInputChange('icon', e.target.value)}
+                placeholder="🚀 or Gamepad2"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 mt-1">Emoji or Lucide icon name</p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">Gallery Folder</label>
+              <input
+                type="text"
+                value={formData.galleryFolder || ''}
+                onChange={(e) => handleInputChange('galleryFolder', e.target.value)}
+                placeholder="project-gallery"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+        </FormSection>
+
+        {/* Content & Features */}
+        <FormSection
+          title="Content & Features"
+          icon={<Layers className="w-5 h-5" />}
+          defaultExpanded={false}
+          badge={getContentCount()}
+          colorClass="text-purple-400"
+          description="Technologies, features, challenges, and custom content"
+        >
+          <div className="space-y-6">
+            <ArrayInput
+              label="Technologies"
+              value={formData.tech || []}
+              onChange={(value) => handleInputChange('tech', value)}
+              placeholder="React, TypeScript, etc."
+            />
+
+            <ArrayInput
+              label="Key Features"
+              value={formData.features || []}
+              onChange={(value) => handleInputChange('features', value)}
+              placeholder="Real-time updates, responsive design, etc."
+            />
+
+            <ArrayInput
+              label="Technical Challenges"
+              value={formData.challenges || []}
+              onChange={(value) => handleInputChange('challenges', value)}
+              placeholder="State management, performance optimization, etc."
+            />
+
+            <ArrayInput
+              label="Screenshots"
+              value={formData.screenshots || []}
+              onChange={(value) => handleInputChange('screenshots', value)}
+              placeholder="/img/screens/project-screenshot.png"
+            />
+
+            {/* Custom Content Sections */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <label className="block text-sm font-medium">Custom Content Sections</label>
+                <button
+                  type="button"
+                  onClick={addContentSection}
+                  className="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm transition-colors"
+                >
+                  Add Section
+                </button>
+              </div>
+              
+              {formData.content?.map((section, index) => (
+                <div key={index} className="bg-gray-800 p-4 rounded-lg mb-3 border border-gray-700">
+                  <div className="flex items-center justify-between mb-3">
+                    <input
+                      type="text"
+                      value={section.title}
+                      onChange={(e) => updateContentSection(index, 'title', e.target.value)}
+                      placeholder="Section title"
+                      className="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeContentSection(index)}
+                      className="ml-2 text-red-400 hover:text-red-300 px-2 py-1 rounded"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  
+                  <select
+                    value={section.type || 'paragraph'}
+                    onChange={(e) => updateContentSection(index, 'type', e.target.value)}
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 mb-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    {CONTENT_TYPES.map(type => (
+                      <option key={type.value} value={type.value}>{type.label}</option>
+                    ))}
+                  </select>
+                  
+                  <textarea
+                    value={Array.isArray(section.text) ? section.text.join('\n') : section.text}
+                    onChange={(e) => updateContentSection(index, 'text', e.target.value)}
+                    placeholder={section.type === 'list' ? 'One item per line' : section.type === 'paragraphs' ? 'One paragraph per line' : 'Section content'}
+                    rows={4}
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </FormSection>
+
+        {/* Advanced Options */}
+        <FormSection
+          title="Advanced Options"
+          icon={<Settings className="w-5 h-5" />}
+          defaultExpanded={false}
+          colorClass="text-red-400"
+          description="Configuration flags and advanced settings"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={formData.hideVisualSection || false}
+                onChange={(e) => handleInputChange('hideVisualSection', e.target.checked)}
+                className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-700 rounded focus:ring-blue-500"
+              />
+              <label className="ml-2 text-sm">Hide Visual Section</label>
+            </div>
+            
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={formData.hideProjectInfo || false}
+                onChange={(e) => handleInputChange('hideProjectInfo', e.target.checked)}
+                className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-700 rounded focus:ring-blue-500"
+              />
+              <label className="ml-2 text-sm">Hide Project Info</label>
+            </div>
+            
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={formData.hideTechStack || false}
+                onChange={(e) => handleInputChange('hideTechStack', e.target.checked)}
+                className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-700 rounded focus:ring-blue-500"
+              />
+              <label className="ml-2 text-sm">Hide Tech Stack</label>
+            </div>
+          </div>
+        </FormSection>
+      </div>
+
+      {/* Submit Button */}
+      <div className="bg-gray-900 rounded-lg p-6">
+        <button
+          type="submit"
+          onClick={handleSubmit}
+          className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 py-3 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
+        >
+          Generate Code Blocks
+        </button>
+      </div>
+    </div>
+  )
+} 

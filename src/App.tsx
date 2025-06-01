@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import ProjectForm from './components/ProjectForm'
+import ProjectFormImproved from './components/ProjectFormImproved'
 import CodeOutput from './components/CodeOutput'
+import UIComparisonDemo from './components/UIComparisonDemo'
 import type { ProjectFormData } from './types/project'
 
 function App() {
@@ -26,9 +27,11 @@ function App() {
           </p>
         </header>
 
+        <UIComparisonDemo />
+
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <ProjectForm onSubmit={handleFormSubmit} />
+            <ProjectFormImproved onSubmit={handleFormSubmit} />
           </div>
           
           <div className="space-y-6">
