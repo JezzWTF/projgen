@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Minus, FileCode2, Lightbulb } from 'lucide-react'
+import { Plus, Minus, FileCode2, Lightbulb, RotateCcw } from 'lucide-react'
 import type { ProjectFormData, ContentSection } from '../types/project'
 import { STATUS_OPTIONS, GRADIENT_OPTIONS, CONTENT_TYPES } from '../types/project'
 
@@ -132,24 +132,55 @@ export default function ProjectForm({ onSubmit }: Props) {
       hideVisualSection: false,
       hideProjectInfo: false,
       hideTechStack: false
+    })  }
+
+  const clearAllData = () => {
+    setFormData({
+      id: '',
+      title: '',
+      description: '',
+      status: 'Live',
+      lastUpdated: '',
+      color: 'from-blue-400 to-cyan-500',
+      featured: false,
+      tech: [],
+      features: [],
+      challenges: [],
+      screenshots: [],
+      content: [],
+      isOpenSource: true
     })
+    // Clear all input fields
+    setTechInput('')
+    setFeatureInput('')
+    setChallengeInput('')
+    setScreenshotInput('')
   }
 
   return (
-    <div className="bg-gray-900 rounded-lg p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-gray-900 rounded-lg p-6">      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <FileCode2 className="w-6 h-6 text-blue-400" />
           <h2 className="text-2xl font-bold">Project Details</h2>
         </div>
-        <button
-          type="button"
-          onClick={loadExampleData}
-          className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
-        >
-          <Lightbulb className="w-4 h-4" />
-          Load Example
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={clearAllData}
+            className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
+          >
+            <RotateCcw className="w-4 h-4" />
+            Clear All
+          </button>
+          <button
+            type="button"
+            onClick={loadExampleData}
+            className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
+          >
+            <Lightbulb className="w-4 h-4" />
+            Load Example
+          </button>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

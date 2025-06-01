@@ -9,28 +9,35 @@ interface Props {
 
 export default function CodeOutput({ projectData, onReset }: Props) {
   const [copiedBlock, setCopiedBlock] = useState<string | null>(null)
-
+  
   const generateProjectsPageCode = () => {
     const iconValue = projectData.icon?.includes('(') || !projectData.icon?.match(/^[A-Z]/) 
       ? `"${projectData.icon}"` 
       : projectData.icon
 
-    const githubLine = projectData.github ? `  github: "${projectData.github}",` : ''
-    const urlLine = projectData.url ? `  url: "${projectData.url}",` : ''
-    const isOpenSourceLine = projectData.github && !projectData.isOpenSource 
-      ? `  isOpenSource: false,` 
-      : ''
-
-    return `{
-  id: "${projectData.id}",
-  title: "${projectData.title}",
-  description: "${projectData.description}",
-  icon: ${iconValue},
-  tech: [${projectData.tech?.map(tech => `"${tech}"`).join(', ') || ''}],
-  color: "${projectData.color}",
-  status: "${projectData.status}",
-  featured: ${projectData.featured},${urlLine}${githubLine}${isOpenSourceLine}
-}`
+    const lines: string[] = []
+    lines.push(`{`)
+    lines.push(`  id: "${projectData.id}",`)
+    lines.push(`  title: "${projectData.title}",`)
+    lines.push(`  description: "${projectData.description}",`)
+    lines.push(`  icon: ${iconValue},`)
+    lines.push(`  tech: [${projectData.tech?.map(tech => `"${tech}"`).join(', ') || ''}],`)
+    lines.push(`  color: "${projectData.color}",`)
+    lines.push(`  status: "${projectData.status}",`)
+    lines.push(`  featured: ${projectData.featured},`)
+    
+    if (projectData.url) {
+      lines.push(`  url: "${projectData.url}",`)
+    }
+    
+    if (projectData.github) {
+      lines.push(`  github: "${projectData.github}",`)
+      lines.push(`  isOpenSource: ${projectData.isOpenSource},`)
+    }
+    
+    lines.push(`}`)
+    
+    return lines.join('\n')
   }
 
   const generateProjectDetailCode = () => {
@@ -47,12 +54,9 @@ export default function CodeOutput({ projectData, onReset }: Props) {
     if (projectData.url) {
       lines.push(`  url: "${projectData.url}",`)
     }
-    
-    if (projectData.github) {
+      if (projectData.github) {
       lines.push(`  github: "${projectData.github}",`)
-      if (!projectData.isOpenSource) {
-        lines.push(`  isOpenSource: false,`)
-      }
+      lines.push(`  isOpenSource: ${projectData.isOpenSource},`)
     }
     
     if (projectData.icon) {
