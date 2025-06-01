@@ -19,10 +19,10 @@ function App() {
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent mb-2">
-            Jezz.WTF Project Generator
+            ProjGen
           </h1>
           <p className="text-gray-400">
-            Generate code blocks for your portfolio projects
+            Generate code blocks for the portfolio projects page
           </p>
         </header>
 
