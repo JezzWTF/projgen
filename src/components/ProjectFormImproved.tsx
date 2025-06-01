@@ -24,7 +24,8 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
     challenges: [],
     screenshots: [],
     content: [],
-    isOpenSource: true
+    isOpenSource: true,
+    special: false // Add special to initial state
   })
 
   // Track whether the ID was manually edited by the user
@@ -122,7 +123,8 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
       galleryFolder: "example-gallery",
       hideVisualSection: false,
       hideProjectInfo: false,
-      hideTechStack: false
+      hideTechStack: false,
+      special: false // Add special to example data
     })
     setIsIdManuallyEdited(true) // Example data has a pre-set ID
   }
@@ -141,7 +143,8 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
       challenges: [],
       screenshots: [],
       content: [],
-      isOpenSource: true
+      isOpenSource: true,
+      special: false // Add special to cleared data
     })
     setIsIdManuallyEdited(false) // Reset to auto-generation mode
   }
@@ -291,6 +294,16 @@ export default function ProjectFormImproved({ onSubmit, onSwitchToWizard }: Prop
               className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-700 rounded focus:ring-blue-500"
             />
             <label className="ml-2 text-sm">Featured Project</label>
+          </div>
+
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              checked={formData.special || false}
+              onChange={(e) => handleInputChange('special', e.target.checked)}
+              className="w-4 h-4 text-yellow-600 bg-gray-800 border-gray-700 rounded focus:ring-yellow-500"
+            />
+            <label className="ml-2 text-sm">Special Project</label>
           </div>
         </form>
       </div>

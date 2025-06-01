@@ -26,7 +26,8 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
     challenges: [],
     screenshots: [],
     content: [],
-    isOpenSource: true
+    isOpenSource: true,
+    special: false // Add special to initial state
   })
 
   const [isIdManuallyEdited, setIsIdManuallyEdited] = useState(false)
@@ -111,7 +112,8 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
       galleryFolder: "example-gallery",
       hideVisualSection: false,
       hideProjectInfo: false,
-      hideTechStack: false
+      hideTechStack: false,
+      special: false // Add special to example data
     })
     setIsIdManuallyEdited(true)
   }
@@ -130,7 +132,8 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
       challenges: [],
       screenshots: [],
       content: [],
-      isOpenSource: true
+      isOpenSource: true,
+      special: false // Add special to cleared data
     })
     setIsIdManuallyEdited(false)
     setCurrentStep(1)
@@ -311,6 +314,17 @@ export default function ProjectWizard({ onSubmit, onSwitchToForm }: Props) {
                 />
                 <label className="ml-2 text-sm">Featured Project</label>
                 <p className="text-xs text-gray-500 ml-2">(appears prominently in portfolio)</p>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.special || false}
+                  onChange={(e) => handleInputChange('special', e.target.checked)}
+                  className="w-4 h-4 text-yellow-600 bg-gray-800 border-gray-700 rounded focus:ring-yellow-500"
+                />
+                <label className="ml-2 text-sm">Special Project</label>
+                <p className="text-xs text-gray-500 ml-2">(marks project with a special tag)</p>
               </div>
             </div>
           </WizardStep>

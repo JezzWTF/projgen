@@ -1,19 +1,28 @@
 import { useState } from 'react'
 import ProjectFormImproved from './components/ProjectFormImproved'
+import ProjectWizard from './components/ProjectWizard' // Import ProjectWizard
 import CodeOutput from './components/CodeOutput'
-import UIComparisonDemo from './components/UIComparisonDemo'
+// import UIComparisonDemo from './components/UIComparisonDemo'
 import type { ProjectFormData } from './types/project'
+
+type ViewMode = 'form' | 'wizard' // Define view modes
 
 function App() {
   const [projectData, setProjectData] = useState<ProjectFormData | null>(null)
+  const [viewMode, setViewMode] = useState<ViewMode>('form') // Default to form view
 
   const handleFormSubmit = (data: ProjectFormData) => {
     setProjectData(data)
+    // Optionally, switch back to form view or a success view after submission
   }
 
   const handleReset = () => {
     setProjectData(null)
+    // Optionally, reset viewMode to 'form' if desired
   }
+
+  const switchToWizard = () => setViewMode('wizard')
+  const switchToForm = () => setViewMode('form')
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
@@ -27,11 +36,15 @@ function App() {
           </p>
         </header>
 
-        <UIComparisonDemo />
+        {/* <UIComparisonDemo /> */}
 
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <ProjectFormImproved onSubmit={handleFormSubmit} />
+            {viewMode === 'form' ? (
+              <ProjectFormImproved onSubmit={handleFormSubmit} onSwitchToWizard={switchToWizard} />
+            ) : (
+              <ProjectWizard onSubmit={handleFormSubmit} onSwitchToForm={switchToForm} />
+            )}
           </div>
           
           <div className="space-y-6">

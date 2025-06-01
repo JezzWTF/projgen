@@ -28,6 +28,7 @@ export interface ProjectFormData {
   // ProjectsPage.tsx specific fields
   color: string
   featured: boolean
+  special?: boolean // Add the new special tag
 }
 
 export interface ContentSection {
@@ -40,6 +41,7 @@ export const STATUS_OPTIONS = [
   'Live',
   'Active',
   'Private',
+  'InDev',
   'Paused',
   'Experimental'
 ] as const
