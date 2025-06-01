@@ -1,0 +1,128 @@
+---
+description: 
+globs: *.tsx
+alwaysApply: false
+---
+# Project Setup and Architecture Rules
+
+## 🚨 CRITICAL CONSTRAINTS
+**NEVER USE NPM COMMANDS** - This project uses pnpm exclusively. Always use `pnpm` instead of `npm`.
+**NEVER USE NEXTJS COMMANDS** - This is a React + Vite project, NOT a NextJS project. Do not suggest NextJS-specific commands, patterns, or configurations.
+**NEVER RESTART DEV SERVER UNNECESSARILY** - Vite has excellent hot module replacement (HMR). Don't suggest restarting `pnpm dev` for code changes.
+
+## Project Overview
+This is a modern React 19 application built with TypeScript, Vite, and Tailwind CSS v4. The project follows current best practices for frontend development with strict TypeScript configuration and modern tooling.
+
+## Key Technologies and Versions
+- **React**: 19.1.0 (latest with modern JSX transform)
+- **TypeScript**: ~5.8.3 (strict mode enabled)
+- **Vite**: ^6.3.5 (modern build tool)
+- **Tailwind CSS**: ^4.1.8 (latest version with Vite plugin)
+- **Package Manager**: pnpm (MANDATORY - never use npm or yarn)
+
+## Project Structure
+Reference the main configuration files:
+- Entry point: [src/main.tsx](mdc:src/main.tsx)
+- App component: [src/App.tsx](mdc:src/App.tsx)
+- Build configuration: [vite.config.ts](mdc:vite.config.ts)
+- Package configuration: [package.json](mdc:package.json)
+- TypeScript config: [tsconfig.app.json](mdc:tsconfig.app.json)
+
+## Development Guidelines
+
+### Package Manager Rules (CRITICAL)
+- **ALWAYS use `pnpm`** - Never suggest `npm run`, `npm install`, `npm ci`, or any npm commands
+- **NEVER use `npm`** - This will break the project's dependency management
+- **Correct commands:**
+  - `pnpm install` (not `npm install`)
+  - `pnpm dev` (not `npm run dev`)
+  - `pnpm build` (not `npm run build`)
+  - `pnpm add <package>` (not `npm install <package>`)
+  - `pnpm remove <package>` (not `npm uninstall <package>`)
+
+### Framework Rules (CRITICAL)
+- **This is React + Vite, NOT NextJS**
+- **NEVER suggest:**
+  - `next dev` or any Next.js commands
+  - Next.js routing patterns (no `pages/` directory or App Router)
+  - Next.js specific configurations
+  - Next.js API routes (`pages/api/` or `app/api/`)
+  - Next.js middleware patterns
+- **Use Vite patterns instead:**
+  - Vite dev server: `pnpm dev`
+  - Vite build: `pnpm build`
+  - React Router for routing (if needed)
+  - Standard React patterns
+
+### File Organization
+- Components go in `src/components/`
+- Type definitions in `src/types/`
+- Static assets in `src/assets/`
+- Main styles in `src/index.css` and `src/App.css`
+
+### Development Server Management (CRITICAL)
+- **Start dev server once**: `pnpm dev` and leave it running
+- **Vite Hot Module Replacement (HMR)** handles most changes automatically:
+  - React component changes
+  - TypeScript changes  
+  - CSS/Tailwind changes
+  - Most configuration changes
+- **ONLY restart when necessary:**
+  - Adding new dependencies (`pnpm add <package>`)
+  - Changing [vite.config.ts](mdc:vite.config.ts)
+  - Changing [tsconfig.app.json](mdc:tsconfig.app.json) or [tsconfig.json](mdc:tsconfig.json)
+  - Changing [eslint.config.js](mdc:eslint.config.js)
+  - Environment variable changes
+- **NEVER suggest restarting for:**
+  - Component code changes
+  - Style changes
+  - Adding new files
+  - TypeScript errors (fix the code instead)
+
+### Build Scripts
+The project has custom versioning scripts:
+- `pnpm dev` - Development server
+- `pnpm build` - Production build
+- `pnpm build:patch` - Increment patch version and build
+- `pnpm build:minor` - Increment minor version and build
+- `pnpm build:major` - Increment major version and build
+- `pnpm build:noincrease` - Build without version increment
+
+### Code Style Requirements
+- Use TypeScript with strict mode (as configured in [tsconfig.app.json](mdc:tsconfig.app.json))
+- Follow React 19 patterns with modern JSX transform
+- Use Tailwind CSS for styling (v4 with Vite plugin)
+- Ensure ESLint compliance (configuration in [eslint.config.js](mdc:eslint.config.js))
+- Enable `noUnusedLocals` and `noUnusedParameters` - remove unused code
+
+### Dependency Management
+- Use pnpm for package management (NEVER npm or yarn)
+- Special build dependencies configuration exists for esbuild
+- Tailwind CSS oxide is intentionally ignored in build dependencies
+
+### React 19 Specific Guidelines
+- Use the modern JSX transform (no need to import React in components)
+- Leverage React 19's improved performance and features
+- Follow the latest React patterns and best practices
+
+### TypeScript Configuration
+- Target ES2020 with DOM and DOM.Iterable libraries
+- Use ESNext modules with bundler resolution
+- Strict mode enabled with additional linting rules
+- JSX configured for react-jsx transform
+
+### Styling with Tailwind CSS v4
+- Uses the new Vite plugin architecture
+- Modern Tailwind CSS v4 features and syntax
+- Styles defined in [src/index.css](mdc:src/index.css) and [src/App.css](mdc:src/App.css)
+
+## Important Notes
+- This project uses pnpm exclusively - maintain package-lock.json and pnpm-lock.yaml
+- Version management is automated through custom scripts
+- Strict TypeScript configuration requires careful type handling
+- Tailwind CSS v4 may have different syntax from v3 - use latest documentation
+- **REMEMBER: This is React + Vite, NOT NextJS - never suggest NextJS solutions**
+
+
+
+
