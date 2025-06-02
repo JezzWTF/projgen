@@ -134,13 +134,11 @@ export default function CodeOutput({ projectData, onReset }: Props) {
       })
       lines.push(`  ],`)
     }
-    
-    lines.push(`  lastUpdated: "${projectData.lastUpdated}",`)
-    
+
     if (projectData.galleryFolder) {
       lines.push(`  galleryFolder: "${escapeString(projectData.galleryFolder)}",`)
     }
-    
+
     // Configuration flags - only include if true
     if (projectData.hideVisualSection) {
       lines.push(`  hideVisualSection: true,`)
@@ -151,9 +149,12 @@ export default function CodeOutput({ projectData, onReset }: Props) {
     if (projectData.hideTechStack) {
       lines.push(`  hideTechStack: true,`)
     }
-    
+    if (projectData.hideOverview) {
+      lines.push(`  hideOverview: true,`)
+    }
+    lines.push(`  lastUpdated: "${projectData.lastUpdated}",`) // Move lastUpdated to the end for consistency
     lines.push(`}`)
-    
+
     return lines.join('\n')
   }
 

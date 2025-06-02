@@ -549,6 +549,16 @@ export default function ProjectWizard({
                   <label className="ml-2 text-sm">Hide Tech Stack</label>
                   <p className="text-xs text-gray-500 ml-2">(technologies used)</p>
                 </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.hideOverview || false}
+                    onChange={(e) => handleInputChange('hideOverview', e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-700 rounded focus:ring-blue-500"
+                  />
+                  <label className="ml-2 text-sm">Hide Overview Section</label>
+                  <p className='text-xs text-gray-500 ml-2'>(long description on project page)</p>
+                </div>
               </div>
             </div>
           </WizardStep>

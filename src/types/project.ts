@@ -24,6 +24,7 @@ export interface ProjectFormData {
   hideVisualSection?: boolean
   hideProjectInfo?: boolean
   hideTechStack?: boolean
+  hideOverview?: boolean
 
   // ProjectsPage.tsx specific fields
   color: string
