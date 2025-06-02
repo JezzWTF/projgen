@@ -59,6 +59,19 @@ export default function ProjectFormImproved({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate that featured projects have a long description
+    if (formData.featured && !formData.longDescription?.trim()) {
+      // Find the detailed description element and scroll to it
+      const detailedDescriptionField = document.querySelector('[placeholder*="Required for featured projects"]');
+      if (detailedDescriptionField) {
+        detailedDescriptionField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        (detailedDescriptionField as HTMLElement).focus();
+      }
+      
+      return; // Prevent form submission
+    }
+    
     onSubmit()
   }
 
@@ -135,7 +148,7 @@ export default function ProjectFormImproved({
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 required
-                placeholder="My Awesome Project"
+                placeholder="My Project Title"
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -208,6 +221,11 @@ export default function ProjectFormImproved({
             />
             <label className="ml-2 text-sm">Featured Project</label>
           </div>
+          {formData.featured && (
+            <p className="text-xs text-yellow-400 ml-6 mb-2">
+              Featured projects require a semi-detailed description to be displayed on project cards.
+            </p>
+          )}
 
           <div className="flex items-center">
             <input
@@ -216,10 +234,10 @@ export default function ProjectFormImproved({
               onChange={(e) => handleInputChange('special', e.target.checked)}
               className="w-4 h-4 text-yellow-600 bg-gray-800 border-gray-700 rounded focus:ring-yellow-500"
             />
-            <label className="ml-2 text-sm">Special Project</label>
+            <label className="ml-2 text-sm">'Special' Project</label>
           </div>
           <p className="text-xs text-gray-400 ml-6">
-            Marks the project with a distinct visual treatment (e.g., special badge, shine effect) on the portfolio.
+            Marks the project with a distinct visual treatment (e.g., `✨New` badge, shimmer effect) on the portfolio.
           </p>
         </form>
       </div>
@@ -268,14 +286,24 @@ export default function ProjectFormImproved({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Detailed Description</label>
+            <label className="block text-sm font-medium mb-2">
+              Detailed Description {formData.featured && <span className="text-red-400">*</span>}
+            </label>
             <textarea
               value={formData.longDescription || ''}
               onChange={(e) => handleInputChange('longDescription', e.target.value)}
               rows={4}
-              placeholder="A more comprehensive description for the project overview..."
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder={formData.featured ? "Required for featured projects. A more comprehensive description..." : "A more comprehensive description for the project overview..."}
+              className={`w-full bg-gray-800 border ${formData.featured && !formData.longDescription ? 'border-red-400' : 'border-gray-700'} rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+              required={formData.featured}
             />
+            {formData.featured && !formData.longDescription && (
+              <p className="text-xs text-red-400 mt-1">
+                A semi-detailed description is required for featured projects as it will be displayed on the project card.
+                <br />
+                Tip: Don't make it too long, just enough to give a good overview.
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -288,7 +316,7 @@ export default function ProjectFormImproved({
                 type="url"
                 value={formData.url || ''}
                 onChange={(e) => handleInputChange('url', e.target.value)}
-                placeholder="https://your-project.com"
+                placeholder="https://some-tool.jezz.wtf"
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -302,7 +330,7 @@ export default function ProjectFormImproved({
                 type="text"
                 value={formData.github || ''}
                 onChange={(e) => handleInputChange('github', e.target.value)}
-                placeholder="username/repository"
+                placeholder="JezzWTF/repository"
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -366,7 +394,7 @@ export default function ProjectFormImproved({
               label="Technologies"
               value={formData.tech || []}
               onChange={(value) => handleInputChange('tech', value)}
-              placeholder="React, TypeScript, etc."
+              placeholder="React, TypeScript, Python, etc."
             />
 
             <ArrayInput
@@ -380,7 +408,7 @@ export default function ProjectFormImproved({
               label="Technical Challenges"
               value={formData.challenges || []}
               onChange={(value) => handleInputChange('challenges', value)}
-              placeholder="State management, performance optimization, etc."
+              placeholder="Performance optimization, AI mess-ups, etc."
             />
 
             <ArrayInput

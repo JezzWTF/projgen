@@ -19,23 +19,15 @@ export default function NextStepsDisplay({ projectData }: NextStepsDisplayProps)
           const steps = []
           let stepNumber = 1
 
-          // Step 1: Always shown - ProjectsPage.tsx
+          // Step 1: Add project data to projectsData.ts
           steps.push(
-            <li key="projects-page" className="flex items-start gap-3 p-3 bg-gray-700 rounded-md">
-              <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{stepNumber++}</span>
-              <span>Copy the first code block and add it to the projects array in <code className="bg-gray-600 px-1.5 py-0.5 rounded text-blue-300">ProjectsPage.tsx</code></span>
+            <li key="projects-data" className="flex items-start gap-3 p-3 bg-gray-700 rounded-md">
+              <span className="bg-purple-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{stepNumber++}</span>
+              <span>Copy the generated code block and add it to the projectsData array in <code className="bg-gray-600 px-1.5 py-0.5 rounded text-purple-300">src/data/projectsData.ts</code></span>
             </li>
           )
 
-          // Step 2: Always shown - ProjectDetailPage.tsx
-          steps.push(
-            <li key="project-detail" className="flex items-start gap-3 p-3 bg-gray-700 rounded-md">
-              <span className="bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{stepNumber++}</span>
-              <span>Copy the second code block and add it to the projectData object in <code className="bg-gray-600 px-1.5 py-0.5 rounded text-green-300">ProjectDetailPage.tsx</code></span>
-            </li>
-          )
-
-          // Step 3: Only if screenshots exist
+          // Step 2: Only if screenshots exist
           if (projectData.screenshots && projectData.screenshots.length > 0) {
             const screenshotPaths = projectData.screenshots
             const uniqueDirectories = [...new Set(screenshotPaths.map(path => {
@@ -57,13 +49,13 @@ export default function NextStepsDisplay({ projectData }: NextStepsDisplayProps)
             
             steps.push(
               <li key="screenshots" className="flex items-start gap-3 p-3 bg-gray-700 rounded-md">
-                <span className="bg-purple-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{stepNumber++}</span>
+                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{stepNumber++}</span>
                 <span dangerouslySetInnerHTML={{ __html: screenshotInstruction }} />
               </li>
             )
           }
 
-          // Step 4: Only if gallery folder exists
+          // Step 3: Only if gallery folder exists
           if (projectData.galleryFolder) {
             steps.push(
               <li key="gallery" className="flex items-start gap-3 p-3 bg-gray-700 rounded-md">

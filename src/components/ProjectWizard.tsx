@@ -65,6 +65,9 @@ export default function ProjectWizard({
       case 2:
         return true
       case 3:
+        if (formData.featured && !formData.longDescription?.trim()) {
+          return false
+        }
         return true
       case 4:
         return true
@@ -97,6 +100,11 @@ export default function ProjectWizard({
   }
 
   const handleSubmit = () => {
+    if (formData.featured && !formData.longDescription?.trim()) {
+      setCurrentStep(3)
+      return
+    }
+    
     onSubmit()
   }
 
@@ -248,6 +256,11 @@ export default function ProjectWizard({
                 <label className="ml-2 text-sm">Featured Project</label>
                 <p className="text-xs text-gray-500 ml-2">(appears prominently in portfolio)</p>
               </div>
+              {formData.featured && (
+                <p className="text-xs text-yellow-400 ml-6 mb-2">
+                  Featured projects require a semi-detailed description (in step 3) to be displayed on project cards.
+                </p>
+              )}
 
               <div className="flex items-center">
                 <input
@@ -320,14 +333,24 @@ export default function ProjectWizard({
               )}
 
               <div>
-                <label className="block text-sm font-medium mb-2">Long Description</label>
+                <label className="block text-sm font-medium mb-2">
+                  Long Description {formData.featured && <span className="text-red-400">*</span>}
+                </label>
                 <textarea
                   value={formData.longDescription || ''}
                   onChange={(e) => handleInputChange('longDescription', e.target.value)}
-                  placeholder="A detailed description for the overview section"
+                  placeholder={formData.featured ? "Required for featured projects. A detailed description for the overview section..." : "A detailed description for the overview section"}
                   rows={4}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full bg-gray-800 border ${formData.featured && !formData.longDescription ? 'border-red-400' : 'border-gray-700'} rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  required={formData.featured}
                 />
+                {formData.featured && !formData.longDescription && (
+                  <p className="text-xs text-red-400 mt-1">
+                    A semi-detailed description is required for featured projects as it will be displayed on the project card.
+                    <br />
+                    Tip: Don't make it too long, just enough to give a good overview.
+                  </p>
+                )}
               </div>
             </div>
           </WizardStep>
@@ -360,7 +383,7 @@ export default function ProjectWizard({
                  label="Challenges & Solutions"
                  value={formData.challenges || []}
                  onChange={(items: string[]) => handleInputChange('challenges', items)}
-                 placeholder="Performance optimization, Complex state management..."
+                 placeholder="Performance optimization, Headaches from AI..."
                />
             </div>
           </WizardStep>
