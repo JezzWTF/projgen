@@ -57,14 +57,6 @@ function App() {
     setHasCodeBeenGenerated(true);
   };
 
-  const handleReset = () => {
-    setGeneratedProjectData(null);
-    setFormData(INITIAL_PROJECT_FORM_DATA);
-    setIsIdManuallyEdited(false);
-    setIsCodeStale(false);
-    setHasCodeBeenGenerated(false);
-  };
-
   const handleCodeReset = () => {
     setGeneratedProjectData(null);
     setIsCodeStale(true);
