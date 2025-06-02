@@ -65,6 +65,12 @@ function App() {
     setHasCodeBeenGenerated(false);
   };
 
+  const handleCodeReset = () => {
+    setGeneratedProjectData(null);
+    setIsCodeStale(true);
+    setHasCodeBeenGenerated(false);
+  };
+
   const handleLoadExample = () => {
     setFormData(EXAMPLE_PROJECT_FORM_DATA);
     setIsIdManuallyEdited(true); // Example data has a pre-set ID
@@ -129,7 +135,7 @@ function App() {
                     {
                       key: 'code',
                       label: 'Generated Code',
-                      content: <CodeOutput projectData={generatedProjectData} onReset={handleReset} />
+                      content: <CodeOutput projectData={generatedProjectData} onReset={handleCodeReset} />
                     },
                     {
                       key: 'next-steps',
