@@ -34,6 +34,20 @@ export default function ProjectFormImproved({
     onFormDataChange({ [field]: value })
   }
 
+  const isFormValid = () => {
+    const requiredFields = ['title', 'status', 'description', 'lastUpdated'] as const
+    const hasRequiredFields = requiredFields.every(field => 
+      formData[field] && String(formData[field]).trim()
+    )
+    
+    // If featured, also check for long description
+    if (formData.featured && !formData.longDescription?.trim()) {
+      return false
+    }
+    
+    return hasRequiredFields
+  }
+
   const addContentSection = () => {
     const newSection: ContentSection = {
       title: '',
@@ -60,6 +74,29 @@ export default function ProjectFormImproved({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
+    // Validate required fields
+    const requiredFields = [
+      { field: 'title', name: 'Project Title' },
+      { field: 'status', name: 'Status' },
+      { field: 'description', name: 'Short Description' },
+      { field: 'lastUpdated', name: 'Last Updated' }
+    ]
+    
+    for (const { field, name } of requiredFields) {
+      if (!formData[field as keyof ProjectFormData] || !String(formData[field as keyof ProjectFormData]).trim()) {
+        // Find the field element and scroll to it
+        const fieldElement = document.querySelector(`input[placeholder*="${name}"], textarea[placeholder*="${name}"], select`) as HTMLElement;
+        if (fieldElement) {
+          fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          fieldElement.focus();
+        }
+        
+        // Show an alert or you could implement a toast notification
+        alert(`Please fill in the required field: ${name}`);
+        return; // Prevent form submission
+      }
+    }
+    
     // Validate that featured projects have a long description
     if (formData.featured && !formData.longDescription?.trim()) {
       // Find the detailed description element and scroll to it
@@ -69,6 +106,7 @@ export default function ProjectFormImproved({
         (detailedDescriptionField as HTMLElement).focus();
       }
       
+      alert('Featured projects require a detailed description.');
       return; // Prevent form submission
     }
     
@@ -149,7 +187,7 @@ export default function ProjectFormImproved({
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 required
                 placeholder="My Project Title"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={`w-full bg-gray-800 border ${!formData.title?.trim() ? 'border-red-400' : 'border-gray-700'} rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
               />
             </div>
             
@@ -173,14 +211,14 @@ export default function ProjectFormImproved({
             <label className="block text-sm font-medium mb-2">
               Short Description <span className="text-red-400">*</span>
             </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              required
-              rows={3}
-              placeholder="A brief description of what this project does..."
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+                          <textarea
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                required
+                rows={3}
+                placeholder="A brief description of what this project does..."
+                className={`w-full bg-gray-800 border ${!formData.description?.trim() ? 'border-red-400' : 'border-gray-700'} rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+              />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -188,14 +226,14 @@ export default function ProjectFormImproved({
               <label className="block text-sm font-medium mb-2">
                 Last Updated <span className="text-red-400">*</span>
               </label>
-              <input
-                type="text"
-                value={formData.lastUpdated}
-                onChange={(e) => handleInputChange('lastUpdated', e.target.value)}
-                placeholder="DD-MM-YYYY or descriptive text"
-                required
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+                              <input
+                  type="text"
+                  value={formData.lastUpdated}
+                  onChange={(e) => handleInputChange('lastUpdated', e.target.value)}
+                  placeholder="DD-MM-YYYY or descriptive text"
+                  required
+                  className={`w-full bg-gray-800 border ${!formData.lastUpdated?.trim() ? 'border-red-400' : 'border-gray-700'} rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                />
             </div>
             
             <div>
@@ -530,13 +568,23 @@ export default function ProjectFormImproved({
         <button
           type="submit"
           onClick={handleSubmit}
-          className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 py-3 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
+          disabled={!isFormValid()}
+          className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+            isFormValid() 
+              ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 transform hover:scale-105 text-white' 
+              : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+          }`}
         >
-          {hasCodeBeenGenerated && isCodeStale ? 'Re-generate Code Blocks' : 'Generate Code Blocks'}
+          {hasCodeBeenGenerated && isCodeStale ? 'Re-generate Code' : 'Generate Code'}
         </button>
         {hasCodeBeenGenerated && isCodeStale && (
           <p className="text-center text-yellow-400 text-xs mt-2">
-            Form data has changed. Re-generate to see updated code blocks.
+            Form data has changed. Re-generate to see updated code block.
+          </p>
+        )}
+        {!isFormValid() && (
+          <p className="text-center text-red-400 text-xs mt-2">
+            Please fill in all required fields (marked with *) to generate code.
           </p>
         )}
       </div>
