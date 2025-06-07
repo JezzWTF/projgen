@@ -596,7 +596,7 @@ export default function ProjectForm({ onSubmit }: Props) {
           type="submit"
           className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 py-3 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
         >
-          Generate Code Blocks
+          Generate Code Block
         </button>
       </form>
     </div>
